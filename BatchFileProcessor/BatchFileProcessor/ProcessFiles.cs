@@ -19,8 +19,7 @@ namespace BatchFileProcessor
             ILogger log)
         {
             JObject myEvent = JsonConvert.DeserializeObject<JObject>(eventGridEvent.Data.ToString());
-            log.LogInformation($"Action: {myEvent["operationName"]}");
-            log.LogInformation($"Action: {myEvent["resourceUri"]}");
+            log.LogInformation(eventGridEvent.Data.ToString());
         }
     }
 }
