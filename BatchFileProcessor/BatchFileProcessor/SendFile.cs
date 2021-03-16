@@ -43,8 +43,8 @@ namespace BatchFileProcessor
                     };
 
                     // Create a local file in the ./ directory for uploading and downloading
-                    string localPath = "./";
-                    string fileName = DateTime.UtcNow.ToString("yyMMddHHmmss") + Guid.NewGuid().ToString() + ".json";
+                    string localPath = Path.GetTempPath();
+                    string fileName = $"{DateTime.UtcNow.ToString("yyMMddHHmmss")}-{Guid.NewGuid().ToString()}.json";
                     string localFilePath = Path.Combine(localPath, fileName);
 
                     // Write text to the file
