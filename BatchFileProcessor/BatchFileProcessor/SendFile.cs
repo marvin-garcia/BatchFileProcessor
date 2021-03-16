@@ -53,7 +53,7 @@ namespace BatchFileProcessor
                     // Get a reference to a blob
                     BlobClient blobClient = containerClient.GetBlobClient(fileName);
 
-                    Console.WriteLine("Uploading to Blob storage as blob:\n\t {0}\n", blobClient.Uri);
+                    log.LogInformation("Uploading to Blob storage as blob:\n\t {0}\n", blobClient.Uri);
 
                     // Open the file and upload its data
                     using FileStream uploadFileStream = File.OpenRead(localFilePath);
