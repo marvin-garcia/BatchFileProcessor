@@ -1,4 +1,4 @@
-name: Build and deploy .NET Core Function App to BatchFileProcessor
+name: BatchFileProcessor - CI
 on:
   push:
     branches:
@@ -6,10 +6,10 @@ on:
 env:
   AZURE_FUNCTIONAPP_NAME: BatchFileProcessor
   AZURE_FUNCTIONAPP_PACKAGE_PATH: .\published
-  AZURE_FUNCTIONAPP_PUBLISH_PROFILE: ${{ secrets.BATCHFILEPROCESSOR_FFFF }}
+  AZURE_FUNCTIONAPP_PUBLISH_PROFILE: ${{ secrets.BATCHFILEPROCESSOR }}
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 3.1.x
-  WORKING_DIRECTORY: ''
+  WORKING_DIRECTORY: '.\BatchFileProcessor\BatchFileProcessor\'
 jobs:
   build-and-deploy:
     runs-on: windows-latest
