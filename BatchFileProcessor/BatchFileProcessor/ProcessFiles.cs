@@ -6,15 +6,21 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BatchFileProcessor
 {
     public static class ProcessFiles
     {
         [FunctionName("ProcessFiles")]
-        public static void Run([EventGridTrigger]EventGridEvent eventGridEvent, ILogger log)
+        public static void Run(
+            [EventGridTrigger]EventGridEvent eventGridEvent,
+            ILogger log)
         {
-            log.LogInformation(eventGridEvent.Data.ToString());
+            JObject myEvent = JsonConvert.DeserializeObject<JObject>(eventGridEvent.Data.ToString());
+            log.LogInformation($"Action: {myEvent["operationName"]}");
+            log.LogInformation($"Action: {myEvent["resourceUri"]}");
         }
     }
 }
