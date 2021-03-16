@@ -28,12 +28,6 @@ namespace BatchFileProcessor
 
                 if (num <= _threshold)
                 {
-                    // Create a BlobServiceClient object which will be used to create a container client
-                    BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);
-
-                    // Create container client object
-                    BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
-
                     var body = new
                     {
                         Timestamp = DateTime.UtcNow.ToString(),
@@ -42,13 +36,19 @@ namespace BatchFileProcessor
                         Value = num,
                     };
 
-                    // Create a local file in the ./ directory for uploading and downloading
+                    // Create a local file in a temp directory for uploading
                     string localPath = Path.GetTempPath();
                     string fileName = $"{DateTime.UtcNow.ToString("yyMMddHHmmss")}-{Guid.NewGuid().ToString()}.json";
                     string localFilePath = Path.Combine(localPath, fileName);
 
                     // Write text to the file
                     await File.WriteAllTextAsync(localFilePath, JsonConvert.SerializeObject(body));
+
+                    // Create a BlobServiceClient object which will be used to create a container client
+                    BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);
+
+                    // Create container client object
+                    BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
 
                     // Get a reference to a blob
                     BlobClient blobClient = containerClient.GetBlobClient(fileName);
