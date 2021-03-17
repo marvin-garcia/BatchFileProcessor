@@ -1,33 +1,89 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Text;
+using Newtonsoft.Json;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+using System.Threading;
 
 namespace BatchFileProcessor
 {
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class FileBatch
     {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("isActive")]
+        public bool IsActive { get; set; }
         [JsonProperty("startTime")]
         public DateTime StartTime { get; set; }
-        [JsonProperty("endTime")]
-        public DateTime EndTime { get; set; }
+        [JsonProperty("lastUpdated")]
+        public DateTime LastUpdated { get; set; }
         [JsonProperty("files")]
         public List<BatchFile> Files { get; set; }
 
-        public FileBatch()
+        public void Add(BatchFile file)
         {
-            this.Files = new List<BatchFile>() { };
+            // Initialize time
+            if (this.StartTime == null)
+            {
+                this.IsActive = true;
+                this.StartTime = DateTime.UtcNow;
+                this.Id = Guid.NewGuid().ToString();
+            }
+
+            // Add file to list
+            if (this.Files == null)
+                this.Files = new List<BatchFile>() { file };
+            else
+                this.Files.Add(file);
+
+            this.LastUpdated = DateTime.UtcNow;
         }
 
-        public void Add(BatchFile file) => this.Files.Add(file);
-        public void Reset() => this.Files = new List<BatchFile>() { };
-        public List<BatchFile> GetFiles() => this.Files;
+        public FileBatch Get()
+        {
+            return this;
+        }
+
+        public List<BatchFile> GetFiles()
+        {
+            return this.Files;
+        }
+
+        public int FileCount()
+        {
+            return this.Files.Count;
+        }
+
+        public FileBatch WhenPastDue()
+        {
+            do
+            {
+                Thread.Sleep(new TimeSpan(0, 0, 30));
+            }
+            while (DateTime.UtcNow < this.LastUpdated.AddSeconds(30));
+            
+            return this;
+        }
+
+        public Task Reset()
+        {
+            this.IsActive = false;
+            this.Files = new List<BatchFile>() { };
+            Entity.Current.DeleteState();
+            return Task.CompletedTask;
+        }
+
+        [FunctionName(nameof(FileBatch))]
+        public static Task Run([EntityTrigger] IDurableEntityContext ctx) => ctx.DispatchAsync<FileBatch>();
     }
 
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class BatchFile
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        [JsonProperty("message")]
+        public string Message { get; set; }
         [JsonProperty("timestamp")]
         public DateTime Timestamp { get; set; }
         [JsonProperty("threshold")]
