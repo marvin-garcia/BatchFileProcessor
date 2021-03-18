@@ -6,7 +6,7 @@ using Azure.Storage.Blobs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace BatchFileProcessor
+namespace FileSender
 {
     public static class UploadFileToStorage
     {
@@ -16,7 +16,7 @@ namespace BatchFileProcessor
 
         [FunctionName("UploadFileToStorage")]
         public static async Task Run(
-            [TimerTrigger("0 */1 * * * *")] TimerInfo myTimer,
+            [TimerTrigger("*/30 * * * * *")] TimerInfo myTimer,
             ILogger log)
         {
             try
