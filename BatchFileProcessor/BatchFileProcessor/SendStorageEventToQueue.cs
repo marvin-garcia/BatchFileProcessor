@@ -20,15 +20,23 @@ namespace BatchFileProcessor
         private static string _containerName = Environment.GetEnvironmentVariable("ContainerName");
 
         [FunctionName("SendStorageEventToQueue")]
-        public static void Run(
+        [return: Queue("%QueueName%")]
+        public static string Run(
             [EventGridTrigger] EventGridEvent eventGridEvent,
-            [Queue("%QueueName%")] out string outgoingMessage,
             ILogger log)
         {
-            log.LogInformation($"Sending event to storage queue");
-            log.LogDebug($"Event content: {eventGridEvent.Data.ToString()}");
+            try
+            {
+                log.LogInformation($"Sending event to storage queue");
+                log.LogDebug($"Event content: {eventGridEvent.Data.ToString()}");
 
-            outgoingMessage = eventGridEvent.Data.ToString();
+                return eventGridEvent.Data.ToString();
+            }
+            catch (Exception e)
+            {
+                log.LogError($"SendStorageEventToQueue failed with exception {e}");
+                throw e;
+            }
         }
     }
 }
