@@ -69,15 +69,15 @@ namespace BatchFileProcessor
                         BatchFile batchFile = JsonConvert.DeserializeObject<BatchFile>(reader.ReadToEnd());
 
                         // Create entity to batch files
-                        //string entityName = "BatchEntity";
-                        string entityName = batchFile.SourceId;
-                        var entityId = new EntityId(entityName, entityName);
+                        string entityName = "FileBatch";
+                        string entityKey = batchFile.SourceId;
+                        var entityId = new EntityId(entityName, entityKey);
                         await entityClient.SignalEntityAsync(entityId, "Add", batchFile);
 
                         // Capture entity state to report current file count
                         var entityState = await entityClient.ReadEntityStateAsync<FileBatch>(entityId);
                         if (entityState.EntityExists) 
-                            log.LogInformation($"Processed blob {name}. Current file count: {entityState.EntityState.FileCount}");
+                            log.LogInformation($"Processed blob {name}. Current file count: {entityState.EntityState.FileCount}. Monitoring instance Id: {monitoringInstanceId}");
                     }
                 }
                 else
