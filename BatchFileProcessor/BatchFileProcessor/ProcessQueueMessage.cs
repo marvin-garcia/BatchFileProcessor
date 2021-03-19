@@ -71,12 +71,12 @@ namespace BatchFileProcessor
                         // Create entity to batch files
                         //string entityName = "BatchEntity";
                         string entityName = batchFile.SourceId;
-                        var entityId = new EntityId("FileBatch", entityName);
+                        var entityId = new EntityId(entityName, entityName);
                         await entityClient.SignalEntityAsync(entityId, "Add", batchFile);
 
                         // Capture entity state to report current file count
                         var entityState = await entityClient.ReadEntityStateAsync<FileBatch>(entityId);
-                        if (entityState.EntityExists)
+                        if (entityState.EntityExists) 
                             log.LogInformation($"Processed blob {name}. Current file count: {entityState.EntityState.FileCount}");
                     }
                 }
