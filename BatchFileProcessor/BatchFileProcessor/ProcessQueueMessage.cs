@@ -69,7 +69,8 @@ namespace BatchFileProcessor
                         BatchFile batchFile = JsonConvert.DeserializeObject<BatchFile>(reader.ReadToEnd());
 
                         // Create entity to batch files
-                        string entityName = "BatchEntity";
+                        //string entityName = "BatchEntity";
+                        string entityName = "<unique-customer-identifier>";
                         var entityId = new EntityId("FileBatch", entityName);
                         await entityClient.SignalEntityAsync(entityId, "Add", batchFile);
 
