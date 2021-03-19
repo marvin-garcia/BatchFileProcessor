@@ -70,7 +70,7 @@ namespace BatchFileProcessor
 
                         // Create entity to batch files
                         //string entityName = "BatchEntity";
-                        string entityName = "<unique-customer-identifier>";
+                        string entityName = batchFile.SourceId;
                         var entityId = new EntityId("FileBatch", entityName);
                         await entityClient.SignalEntityAsync(entityId, "Add", batchFile);
 

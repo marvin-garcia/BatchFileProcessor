@@ -97,6 +97,8 @@ namespace BatchFileProcessor
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class BatchFile
     {
+        [JsonProperty("sourceId")]
+        public string SourceId { get; set; }
         [JsonProperty("message")]
         public string Message { get; set; }
         [JsonProperty("timestamp")]
